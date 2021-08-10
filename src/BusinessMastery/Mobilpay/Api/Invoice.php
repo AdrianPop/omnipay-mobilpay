@@ -14,24 +14,23 @@ use DOMNode;
 
 class Invoice
 {
-    const ERROR_INVALID_PARAMETER            = 0x11110001;
-    const ERROR_INVALID_CURRENCY            = 0x11110002;
-    const ERROR_ITEM_INSERT_INVALID_INDEX    = 0x11110003;
+    const ERROR_INVALID_PARAMETER = 0x11110001;
+    const ERROR_INVALID_CURRENCY = 0x11110002;
+    const ERROR_ITEM_INSERT_INVALID_INDEX = 0x11110003;
 
-    const ERROR_LOAD_FROM_XML_CURRENCY_ATTR_MISSING    = 0x31110001;
+    const ERROR_LOAD_FROM_XML_CURRENCY_ATTR_MISSING = 0x31110001;
 
-    public $currency                = null;
-    public $amount                  = null;
-    public $details                 = null;
-    public $installments            = null;
-    public $selectedInstallments    = null;
+    public $currency = null;
+    public $amount = null;
+    public $details = null;
+    public $installments = null;
+    public $selectedInstallments = null;
 
+    protected $billingAddress = null;
+    protected $shippingAddress = null;
 
-    protected $billingAddress    = null;
-    protected $shippingAddress   = null;
-
-    protected $items            = [];
-    protected $exchangeRates    = [];
+    protected $items = [];
+    protected $exchangeRates = [];
 
     public function __construct(DOMNode $elem = null)
     {
@@ -44,7 +43,10 @@ class Invoice
     {
         $attr = $elem->attributes->getNamedItem('currency');
         if ($attr == null) {
-            throw new Exception('Invoice::loadFromXml failed; currency attribute missing', self::ERROR_LOAD_FROM_XML_CURRENCY_ATTR_MISSING);
+            throw new Exception(
+                'Invoice::loadFromXml failed; currency attribute missing',
+                self::ERROR_LOAD_FROM_XML_CURRENCY_ATTR_MISSING,
+            );
         }
         $this->currency = $attr->nodeValue;
 
@@ -96,35 +98,35 @@ class Invoice
             throw new Exception('Invalid currency', self::ERROR_INVALID_CURRENCY);
         }
 
-        $xmlAttr            = $xmlDoc->createAttribute('currency');
-        $xmlAttr->nodeValue    = $this->currency;
+        $xmlAttr = $xmlDoc->createAttribute('currency');
+        $xmlAttr->nodeValue = $this->currency;
         $xmlInvElem->appendChild($xmlAttr);
 
         if ($this->amount != null) {
-            $xmlAttr            = $xmlDoc->createAttribute('amount');
+            $xmlAttr = $xmlDoc->createAttribute('amount');
             $xmlAttr->nodeValue = sprintf('%.02f', doubleval($this->amount));
             $xmlInvElem->appendChild($xmlAttr);
         }
 
         if ($this->installments != null) {
-            $xmlAttr            = $xmlDoc->createAttribute('installments');
+            $xmlAttr = $xmlDoc->createAttribute('installments');
             $xmlAttr->nodeValue = $this->installments;
             $xmlInvElem->appendChild($xmlAttr);
         }
 
         if ($this->selectedInstallments != null) {
-            $xmlAttr            = $xmlDoc->createAttribute('selected_installments');
+            $xmlAttr = $xmlDoc->createAttribute('selected_installments');
             $xmlAttr->nodeValue = $this->selectedInstallments;
             $xmlInvElem->appendChild($xmlAttr);
         }
 
         if ($this->details != null) {
-            $xmlElem            = $xmlDoc->createElement('details');
+            $xmlElem = $xmlDoc->createElement('details');
             $xmlElem->appendChild($xmlDoc->createCDATASection(urlencode($this->details)));
             $xmlInvElem->appendChild($xmlElem);
         }
 
-        if (($this->billingAddress instanceof Address) || ($this->shippingAddress instanceof Address)) {
+        if ($this->billingAddress instanceof Address || $this->shippingAddress instanceof Address) {
             $xmlAddr = null;
             if ($this->billingAddress instanceof Address) {
                 try {

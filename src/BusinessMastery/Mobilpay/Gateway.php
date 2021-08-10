@@ -28,9 +28,9 @@ class Gateway extends AbstractGateway
     {
         return [
             'merchantId' => null,
-            'publicKey'  => null,
-            'testMode'   => false,
-            'recurrence' => false
+            'publicKey' => null,
+            'testMode' => false,
+            'recurrence' => false,
         ];
     }
 

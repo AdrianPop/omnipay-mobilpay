@@ -19,16 +19,16 @@ class Notify
     const ERROR_LOAD_FROM_XML_CRC_ATTR_MISSING = 0x60000001;
     const ERROR_LOAD_FROM_XML_ACTION_ELEM_MISSING = 0x60000002;
 
-    public $purchaseId                = null;
-    public $action                    = null;
-    public $errorCode                = null;
-    public $errorMessage            = null;
-    public $timestamp                = null;
-    public $originalAmount            = null;
-    public $processedAmount        = null;
-    public $current_payment_count   = 1;
-    public $customer                = null;
-    public $issuer                  = null;
+    public $purchaseId = null;
+    public $action = null;
+    public $errorCode = null;
+    public $errorMessage = null;
+    public $timestamp = null;
+    public $originalAmount = null;
+    public $processedAmount = null;
+    public $current_payment_count = 1;
+    public $customer = null;
+    public $issuer = null;
 
     private $_crc = null;
 
@@ -45,13 +45,19 @@ class Notify
 
         $attr = $elem->attributes->getNamedItem('crc');
         if ($attr == null) {
-            throw new Exception('Mobilpay_Payment_Request_Notify::loadFromXml failed; mandatory crc attribute missing', self::ERROR_LOAD_FROM_XML_CRC_ATTR_MISSING);
+            throw new Exception(
+                'Mobilpay_Payment_Request_Notify::loadFromXml failed; mandatory crc attribute missing',
+                self::ERROR_LOAD_FROM_XML_CRC_ATTR_MISSING,
+            );
         }
         $this->_crc = $attr->nodeValue;
 
         $elems = $elem->getElementsByTagName('action');
         if ($elems->length != 1) {
-            throw new Exception('Mobilpay_Payment_Request_Notify::loadFromXml failed; mandatory action attribute missing', self::ERROR_LOAD_FROM_XML_ACTION_ELEM_MISSING);
+            throw new Exception(
+                'Mobilpay_Payment_Request_Notify::loadFromXml failed; mandatory action attribute missing',
+                self::ERROR_LOAD_FROM_XML_ACTION_ELEM_MISSING,
+            );
         }
         $this->action = $elems->item(0)->nodeValue;
 
@@ -103,18 +109,32 @@ class Notify
         $parameters = explode('&', $queryString);
         $reqParams = [];
         foreach ($parameters as $item) {
-            list($key, $value) = explode('=', $item);
+            [$key, $value] = explode('=', $item);
             $reqParams[$key] = urldecode($value);
         }
 
         $this->purchaseId = isset($reqParams['mobilpay_refference_id']) ? $reqParams['mobilpay_refference_id'] : null;
-        $this->action = isset($reqParams['mobilpay_refference_action']) ? $reqParams['mobilpay_refference_action'] : null;
-        $this->originalAmount = isset($reqParams['mobilpay_refference_original_amount']) ? $reqParams['mobilpay_refference_original_amount'] : null;
-        $this->processedAmount = isset($reqParams['mobilpay_refference_processed_amount']) ? $reqParams['mobilpay_refference_processed_amount'] : null;
-        $this->current_payment_count = isset($reqParams['mobilpay_refference_current_payment_count']) ? $reqParams['mobilpay_refference_current_payment_count'] : null;
-        $this->errorCode = isset($reqParams['mobilpay_refference_error_code']) ? $reqParams['mobilpay_refference_error_code'] : null;
-        $this->errorMessage = isset($reqParams['mobilpay_refference_error_message']) ? $reqParams['mobilpay_refference_error_message'] : null;
-        $this->timestamp = isset($reqParams['mobilpay_refference_timestamp']) ? $reqParams['mobilpay_refference_timestamp'] : null;
+        $this->action = isset($reqParams['mobilpay_refference_action'])
+            ? $reqParams['mobilpay_refference_action']
+            : null;
+        $this->originalAmount = isset($reqParams['mobilpay_refference_original_amount'])
+            ? $reqParams['mobilpay_refference_original_amount']
+            : null;
+        $this->processedAmount = isset($reqParams['mobilpay_refference_processed_amount'])
+            ? $reqParams['mobilpay_refference_processed_amount']
+            : null;
+        $this->current_payment_count = isset($reqParams['mobilpay_refference_current_payment_count'])
+            ? $reqParams['mobilpay_refference_current_payment_count']
+            : null;
+        $this->errorCode = isset($reqParams['mobilpay_refference_error_code'])
+            ? $reqParams['mobilpay_refference_error_code']
+            : null;
+        $this->errorMessage = isset($reqParams['mobilpay_refference_error_message'])
+            ? $reqParams['mobilpay_refference_error_message']
+            : null;
+        $this->timestamp = isset($reqParams['mobilpay_refference_timestamp'])
+            ? $reqParams['mobilpay_refference_timestamp']
+            : null;
     }
 
     public function createXmlElement(DOMDocument $xmlDoc)

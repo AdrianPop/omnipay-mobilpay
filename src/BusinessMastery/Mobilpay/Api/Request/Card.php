@@ -20,9 +20,9 @@ use Omnipay\MobilPay\Api\Recurrence;
 
 class Card extends AbstractRequest
 {
-    const ERROR_LOAD_FROM_XML_ORDER_INVOICE_ELEM_MISSING    = 0x30000001;
+    const ERROR_LOAD_FROM_XML_ORDER_INVOICE_ELEM_MISSING = 0x30000001;
 
-    public $invoice    = null;
+    public $invoice = null;
     public $recurrence = null;
 
     public function __construct()
@@ -38,7 +38,10 @@ class Card extends AbstractRequest
         //card request specific data
         $elems = $elem->getElementsByTagName('invoice');
         if ($elems->length != 1) {
-            throw new Exception('Mobilpay_Payment_Request_Card::loadFromXml failed; invoice element is missing', self::ERROR_LOAD_FROM_XML_ORDER_INVOICE_ELEM_MISSING);
+            throw new Exception(
+                'Mobilpay_Payment_Request_Card::loadFromXml failed; invoice element is missing',
+                self::ERROR_LOAD_FROM_XML_ORDER_INVOICE_ELEM_MISSING,
+            );
         }
 
         $this->invoice = new Invoice($elems->item(0));
@@ -55,53 +58,56 @@ class Card extends AbstractRequest
     protected function _prepare()
     {
         if (is_null($this->signature) || is_null($this->orderId) || !($this->invoice instanceof Invoice)) {
-            throw new Exception('One or more mandatory properties are invalid!', self::ERROR_PREPARE_MANDATORY_PROPERTIES_UNSET);
+            throw new Exception(
+                'One or more mandatory properties are invalid!',
+                self::ERROR_PREPARE_MANDATORY_PROPERTIES_UNSET,
+            );
         }
 
-        $this->_xmlDoc        = new DOMDocument('1.0', 'utf-8');
-        $rootElem            = $this->_xmlDoc->createElement('order');
+        $this->_xmlDoc = new DOMDocument('1.0', 'utf-8');
+        $rootElem = $this->_xmlDoc->createElement('order');
 
         //set payment type attribute
-        $xmlAttr            = $this->_xmlDoc->createAttribute('type');
-        $xmlAttr->nodeValue    = $this->type;
+        $xmlAttr = $this->_xmlDoc->createAttribute('type');
+        $xmlAttr->nodeValue = $this->type;
         $rootElem->appendChild($xmlAttr);
 
         //set id attribute
-        $xmlAttr            = $this->_xmlDoc->createAttribute('id');
-        $xmlAttr->nodeValue    = $this->orderId;
+        $xmlAttr = $this->_xmlDoc->createAttribute('id');
+        $xmlAttr->nodeValue = $this->orderId;
         $rootElem->appendChild($xmlAttr);
 
         //set timestamp attribute
-        $xmlAttr            = $this->_xmlDoc->createAttribute('timestamp');
-        $xmlAttr->nodeValue    = date('YmdHis');
+        $xmlAttr = $this->_xmlDoc->createAttribute('timestamp');
+        $xmlAttr->nodeValue = date('YmdHis');
         $rootElem->appendChild($xmlAttr);
 
-        $xmlElem            = $this->_xmlDoc->createElement('signature');
-        $xmlElem->nodeValue    = $this->signature;
+        $xmlElem = $this->_xmlDoc->createElement('signature');
+        $xmlElem->nodeValue = $this->signature;
         $rootElem->appendChild($xmlElem);
 
-        $xmlElem            = $this->_xmlDoc->createElement('service');
-        $xmlElem->nodeValue    = $this->service;
+        $xmlElem = $this->_xmlDoc->createElement('service');
+        $xmlElem->nodeValue = $this->service;
         $rootElem->appendChild($xmlElem);
 
-        $xmlElem            = $this->invoice->createXmlElement($this->_xmlDoc);
+        $xmlElem = $this->invoice->createXmlElement($this->_xmlDoc);
         $rootElem->appendChild($xmlElem);
 
         if ($this->recurrence instanceof Recurrence) {
-            $xmlElem            = $this->recurrence->createXmlElement($this->_xmlDoc);
+            $xmlElem = $this->recurrence->createXmlElement($this->_xmlDoc);
             $rootElem->appendChild($xmlElem);
         }
 
         if (is_array($this->params) && sizeof($this->params) > 0) {
             $xmlParams = $this->_xmlDoc->createElement('params');
-            foreach ($this->params as $key=>$value) {
-                $xmlParam    = $this->_xmlDoc->createElement('param');
+            foreach ($this->params as $key => $value) {
+                $xmlParam = $this->_xmlDoc->createElement('param');
 
-                $xmlName            = $this->_xmlDoc->createElement('name');
+                $xmlName = $this->_xmlDoc->createElement('name');
                 $xmlName->nodeValue = trim($key);
                 $xmlParam->appendChild($xmlName);
 
-                $xmlValue            = $this->_xmlDoc->createElement('value');
+                $xmlValue = $this->_xmlDoc->createElement('value');
                 $xmlValue->appendChild($this->_xmlDoc->createCDATASection($value));
                 $xmlParam->appendChild($xmlValue);
 

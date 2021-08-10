@@ -228,16 +228,16 @@ class PurchaseRequest extends AbstractRequest
         $envKey = $envData = null;
         $publicKey = $this->getParameter('publicKey');
 
-        if (! $publicKey) {
-            throw new MissingKeyException("Missing public key path parameter");
+        if (!$publicKey) {
+            throw new MissingKeyException('Missing public key path parameter');
         }
 
         $request = new Card();
-        $request->signature  = $this->getMerchantId();
-        $request->orderId    = $this->getParameter('orderId');
+        $request->signature = $this->getMerchantId();
+        $request->orderId = $this->getParameter('orderId');
         $request->confirmUrl = $this->getParameter('confirmUrl');
-        $request->returnUrl  = $this->getParameter('returnUrl');
-        $request->params     = $this->getParameter('params') ?: [];
+        $request->returnUrl = $this->getParameter('returnUrl');
+        $request->params = $this->getParameter('params') ?: [];
 
         if ($this->getParameter('recurrence')) {
             $request->recurrence = new Recurrence();
@@ -247,8 +247,8 @@ class PurchaseRequest extends AbstractRequest
 
         $request->invoice = new Invoice();
         $request->invoice->currency = $this->getParameter('currency');
-        $request->invoice->amount   = $this->getParameter('amount');
-        $request->invoice->details  = $this->getParameter('details');
+        $request->invoice->amount = $this->getParameter('amount');
+        $request->invoice->details = $this->getParameter('details');
 
         if ($getBillingAddress = $this->getBillingAddress()) {
             $request->invoice->setBillingAddress($this->makeBillingAddress($getBillingAddress));
@@ -258,12 +258,11 @@ class PurchaseRequest extends AbstractRequest
 
         $data = [
             'env_key' => $request->getEnvKey(),
-            'data'    => $request->getEncData()
+            'data' => $request->getEncData(),
         ];
 
         return $data;
     }
-
 
     /**
      * @param array $parameters
@@ -274,20 +273,20 @@ class PurchaseRequest extends AbstractRequest
     {
         $address = new Address();
 
-        $address->type           = $parameters['type']; // person or company
-        $address->firstName      = $parameters['firstName'];
-        $address->lastName       = $parameters['lastName'];
-        $address->fiscalNumber   = $parameters['fiscalNumber'];
+        $address->type = $parameters['type']; // person or company
+        $address->firstName = $parameters['firstName'];
+        $address->lastName = $parameters['lastName'];
+        $address->fiscalNumber = $parameters['fiscalNumber'];
         $address->identityNumber = $parameters['identityNumber'];
-        $address->country        = $parameters['country'];
-        $address->county         = $parameters['county'];
-        $address->city           = $parameters['city'];
-        $address->zipCode        = $parameters['zipCode'];
-        $address->address        = $parameters['address'];
-        $address->email          = $parameters['email'];
-        $address->mobilePhone    = $parameters['mobilePhone'];
-        $address->bank           = $parameters['bank'];
-        $address->iban           = $parameters['iban'];
+        $address->country = $parameters['country'];
+        $address->county = $parameters['county'];
+        $address->city = $parameters['city'];
+        $address->zipCode = $parameters['zipCode'];
+        $address->address = $parameters['address'];
+        $address->email = $parameters['email'];
+        $address->mobilePhone = $parameters['mobilePhone'];
+        $address->bank = $parameters['bank'];
+        $address->iban = $parameters['iban'];
 
         return $address;
     }

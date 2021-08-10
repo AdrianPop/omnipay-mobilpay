@@ -107,7 +107,7 @@ class Address
 
     public function createXmlElement(DOMDocument $xmlDoc, $nodeName)
     {
-        if (! ($xmlDoc instanceof DOMDocument)) {
+        if (!($xmlDoc instanceof DOMDocument)) {
             throw new Exception('', self::ERROR_INVALID_PARAMETER);
         }
 
@@ -219,7 +219,7 @@ class Address
             'ppiBank' => $this->bank,
             'ppiIban' => $this->iban,
             'ppiFiscalNumber' => $this->fiscalNumber,
-            'ppiIdentityNumber' => $this->identityNumber
+            'ppiIdentityNumber' => $this->identityNumber,
         ];
     }
 }

@@ -2,4 +2,6 @@
 
 namespace Omnipay\MobilPay\Exception;
 
-class MissingKeyException extends \Exception{}
+class MissingKeyException extends \Exception
+{
+}

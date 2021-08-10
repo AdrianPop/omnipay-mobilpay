@@ -35,7 +35,7 @@ class CompletePurchaseResponse extends AbstractResponse
     {
         parent::__construct($request, $data);
 
-        $this->request       = $request;
+        $this->request = $request;
         $this->responseError = $responseError;
 
         if (isset($data['objPmNotify']['action'])) {
