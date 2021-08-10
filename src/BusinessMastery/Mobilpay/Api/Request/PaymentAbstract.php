@@ -1,6 +1,7 @@
 <?php
 
-namespace Netopia\Payment\Request;
+namespace Omnipay\MobilPay\Api\Request;
+
 /**
  * Class PaymentAbstract
  * This class can be used for accessing mobilpay.ro payment interface for your configured online services

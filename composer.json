@@ -1,5 +1,5 @@
 {
-    "name": "daika7ana/omnipay-mobilpay",
+    "name": "adrianpop/omnipay-mobilpay",
     "description": "MobilPay driver for the Omnipay PHP payment processing library",
     "keywords": [
         "mobilpay",
@@ -14,17 +14,18 @@
     "license": "MIT",
     "authors": [
         {
+            "name": "Adrian Pop",
+            "email": "ipop@eml.cc"
+        },
+        {
             "name": "Tudor Galanopulos",
             "email": "tudor@tudorg.ro"
         }
     ],
     "require": {
         "php": ">=7.1",
-        "omnipay/common": "~3.",
+        "omnipay/common": "~3.0",
         "php-http/guzzle7-adapter": "^1.0"
-    },
-    "require-dev": {
-        "omnipay/tests": "~2.0"
     },
     "autoload": {
         "psr-4": {
