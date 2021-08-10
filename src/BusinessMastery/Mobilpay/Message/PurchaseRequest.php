@@ -254,6 +254,10 @@ class PurchaseRequest extends AbstractRequest
             $request->invoice->setBillingAddress($this->makeBillingAddress($getBillingAddress));
         }
 
+        if ($token = $this->getToken()) {
+            $request->invoice->tokenId = $token;
+        }
+
         $request->encrypt($this->getParameter('publicKey'));
 
         $data = [

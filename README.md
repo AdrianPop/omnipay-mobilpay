@@ -97,6 +97,13 @@ switch($response->getMessage())
 
 ```
 
+### Token payments
+Create the request like a normal payment.
+Add the previously saved `token_id` to `token` element (after `amount`) and send the request like in the below example. 
+```
+Http::asForm()->post('http://sandboxsecure.mobilpay.ro/card4', $response->getData());
+```
+
 For general usage instructions, please see the main [Omnipay](https://github.com/omnipay/omnipay)
 repository.
 

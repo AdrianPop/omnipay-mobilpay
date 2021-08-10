@@ -137,7 +137,7 @@ class CompletePurchaseRequest extends PurchaseRequest
      * Build IPN response message
      *
      * @param  array $data
-     * @return \Omnipay\Common\Message\ResponseInterface|Response
+     * @return \Omnipay\Common\Message\ResponseInterface|CompletePurchaseResponse
      */
     public function sendData($data)
     {

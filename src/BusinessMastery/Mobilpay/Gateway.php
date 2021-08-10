@@ -3,6 +3,10 @@
 namespace Omnipay\MobilPay;
 
 use Omnipay\Common\AbstractGateway;
+use Omnipay\MobilPay\Message\CompletePurchaseRequest;
+use Omnipay\MobilPay\Message\CompletePurchaseResponse;
+use Omnipay\MobilPay\Message\PurchaseRequest;
+use Omnipay\MobilPay\Message\PurchaseResponse;
 
 /**
  * MobilPay Gateway
@@ -174,7 +178,7 @@ class Gateway extends AbstractGateway
 
     /**
      * @param  array $parameters
-     * @return \Omnipay\Common\Message\ResponseInterface|Response
+     * @return \Omnipay\Common\Message\RequestInterface|PurchaseRequest
      */
     public function purchase(array $parameters = [])
     {
@@ -183,7 +187,7 @@ class Gateway extends AbstractGateway
 
     /**
      * @param  array $parameters
-     * @return \Omnipay\Common\Message\ResponseInterface|Response
+     * @return CompletePurchaseRequest
      */
     public function completePurchase(array $parameters = [])
     {
