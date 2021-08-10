@@ -3,9 +3,9 @@
 namespace Omnipay\MobilPay\Api;
 
 /**
- * Class Mobilpay_Payment_Request
+ * Class Request
  * This class can be used for accessing mobilpay.ro payment interface for your configured online services
- * @copyright NETOPIA System
+ * @copyright NETOPIA
  * @author Claudiu Tudose
  * @version 1.0
  *
@@ -13,12 +13,10 @@ namespace Omnipay\MobilPay\Api;
  * In order to use the OpenSSL functions you need to install the OpenSSL package.
  * See PHP documentation for installing OpenSSL package
  */
-
 class Request
 {
     const PAYMENT_TYPE_SMS = 0x01;
     const PAYMENT_TYPE_CARD = 0x02;
-
     #declare member variables
     /**
      * m_signatue (Mandatory) 	- signature received from mobilpay.Ro that identifies merchant account
@@ -96,13 +94,13 @@ class Request
      */
     public $m_params = [];
 
-    public function Mobilpay_Payment_Request()
-    {
-    }
-
     public function builParametersList()
     {
-        if (is_null($this->m_signature) || is_null($this->m_tran_id) || is_null($this->m_timestamp)) {
+        if (
+            is_null($this->m_signature) ||
+            /*is_null($this->m_service) || */ is_null($this->m_tran_id) ||
+            is_null($this->m_timestamp)
+        ) {
             return null;
         }
         $params['signature'] = urlencode($this->m_signature);
@@ -152,7 +150,7 @@ class Request
         return $params;
     }
 
-    public static function buildQueryString($params)
+    static function buildQueryString($params)
     {
         $crc_pairs = [];
         foreach ($params as $key => $value) {
@@ -177,10 +175,11 @@ class Request
         if (is_null($params)) {
             return false;
         }
-        $src_data = Mobilpay_Payment_Request::buildQueryString($params);
+        $src_data = Request::buildQueryString($params);
         $enc_data = '';
         $env_keys = [];
-        $result = openssl_seal($src_data, $enc_data, $env_keys, [$public_key], 'rc4');
+        $cipher_algo = 'RC4';
+        $result = openssl_seal($src_data, $enc_data, $env_keys, [$public_key], $cipher_algo);
         if ($result === false) {
             $env_key = null;
             $enc_data = null;

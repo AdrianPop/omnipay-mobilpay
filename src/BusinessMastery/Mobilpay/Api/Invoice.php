@@ -4,14 +4,12 @@ namespace Omnipay\MobilPay\Api;
 
 /**
  * Class Invoice
- * @copyright NETOPIA System
+ * @copyright NETOPIA
  * @author Claudiu Tudose
  * @version 1.0
+ *
  */
-
-use DOMDocument;
-use DOMNode;
-
+use Netopia\Payment\Invoice\Item;
 class Invoice
 {
     const ERROR_INVALID_PARAMETER = 0x11110001;
@@ -25,6 +23,8 @@ class Invoice
     public $details = null;
     public $installments = null;
     public $selectedInstallments = null;
+    public $tokenId = null;
+    public $promotionCode = null;
 
     protected $billingAddress = null;
     protected $shippingAddress = null;
@@ -32,18 +32,18 @@ class Invoice
     protected $items = [];
     protected $exchangeRates = [];
 
-    public function __construct(DOMNode $elem = null)
+    public function __construct(\DOMNode $elem = null)
     {
         if ($elem != null) {
             $this->loadFromXml($elem);
         }
     }
 
-    protected function loadFromXml(DOMNode $elem)
+    protected function loadFromXml(\DOMNode $elem)
     {
         $attr = $elem->attributes->getNamedItem('currency');
         if ($attr == null) {
-            throw new Exception(
+            throw new \Exception(
                 'Invoice::loadFromXml failed; currency attribute missing',
                 self::ERROR_LOAD_FROM_XML_CURRENCY_ATTR_MISSING,
             );
@@ -65,6 +65,16 @@ class Invoice
             $this->selectedInstallments = $attr->nodeValue;
         }
 
+        $attr = $elem->attributes->getNamedItem('token_id');
+        if ($attr != null) {
+            $this->tokenId = $attr->nodeValue;
+        }
+
+        $attr = $elem->attributes->getNamedItem('promotion_code');
+        if ($attr != null) {
+            $this->promotionCode = $attr->nodeValue;
+        }
+
         $elems = $elem->getElementsByTagName('details');
         if ($elems->length == 1) {
             $this->details = urldecode($elems->item(0)->nodeValue);
@@ -84,18 +94,60 @@ class Invoice
                 $this->shippingAddress = new Address($elems->item(0));
             }
         }
+
+        $this->items = [];
+        $elems = $elem->getElementsByTagName('items');
+        if ($elems->length == 1) {
+            $itemElems = $elems->item(0);
+            $elems = $itemElems->getElementsByTagName('item');
+            if ($elems->length > 0) {
+                $amount = 0;
+                foreach ($elems as $itemElem) {
+                    try {
+                        $objItem = new Item($itemElem);
+                        $this->items[] = $objItem;
+                        $amount += $objItem->getTotalAmount();
+                    } catch (\Exception $e) {
+                        $e = $e;
+                        continue;
+                    }
+                }
+                $this->amount = $amount;
+            }
+        }
+
+        //		$this->exchangeRates = array();
+        //		$elems = $elem->getElementsByTagName('exchange_rates');
+        //		if($elems->length == 1)
+        //		{
+        //			$rateElems = $elems->item(0);
+        //			$elems = $rateElems->getElementsByTagName('rate');
+        //			foreach ($elems as $rateElem)
+        //			{
+        //				try
+        //				{
+        //					$objRate = new Mobilpay_Payment_Exchange_Rate($rateElem);
+        //					$this->exchangeRates[] = $objRate;
+        //				}
+        //				catch (Exception $e)
+        //				{
+        //					$e = $e;
+        //					continue;
+        //				}
+        //			}
+        //		}
     }
 
-    public function createXmlElement(DOMDocument $xmlDoc)
+    public function createXmlElement(\DOMDocument $xmlDoc)
     {
-        if (!($xmlDoc instanceof DOMDocument)) {
-            throw new Exception('', self::ERROR_INVALID_PARAMETER);
+        if (!($xmlDoc instanceof \DOMDocument)) {
+            throw new \Exception('', self::ERROR_INVALID_PARAMETER);
         }
 
         $xmlInvElem = $xmlDoc->createElement('invoice');
 
         if ($this->currency == null) {
-            throw new Exception('Invalid currency', self::ERROR_INVALID_CURRENCY);
+            throw new \Exception('Invalid currency', self::ERROR_INVALID_CURRENCY);
         }
 
         $xmlAttr = $xmlDoc->createAttribute('currency');
@@ -120,6 +172,18 @@ class Invoice
             $xmlInvElem->appendChild($xmlAttr);
         }
 
+        if ($this->tokenId != null) {
+            $xmlAttr = $xmlDoc->createAttribute('token_id');
+            $xmlAttr->nodeValue = $this->tokenId;
+            $xmlInvElem->appendChild($xmlAttr);
+        }
+
+        if ($this->promotionCode != null) {
+            $xmlAttr = $xmlDoc->createAttribute('promotion_code');
+            $xmlAttr->nodeValue = $this->promotionCode;
+            $xmlInvElem->appendChild($xmlAttr);
+        }
+
         if ($this->details != null) {
             $xmlElem = $xmlDoc->createElement('details');
             $xmlElem->appendChild($xmlDoc->createCDATASection(urlencode($this->details)));
@@ -135,7 +199,7 @@ class Invoice
                         $xmlAddr = $xmlDoc->createElement('contact_info');
                     }
                     $xmlAddr->appendChild($xmlElem);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $e = $e;
                 }
             }
@@ -146,7 +210,7 @@ class Invoice
                         $xmlAddr = $xmlDoc->createElement('contact_info');
                     }
                     $xmlAddr->appendChild($xmlElem);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $e = $e;
                 }
             }
@@ -154,6 +218,56 @@ class Invoice
                 $xmlInvElem->appendChild($xmlAddr);
             }
         }
+
+        if (is_array($this->items) && sizeof($this->items) > 0) {
+            $xmlItems = null;
+            foreach ($this->items as $item) {
+                if (!($item instanceof Item)) {
+                    continue;
+                }
+                try {
+                    $xmlItem = $item->createXmlElement($xmlDoc);
+                    if ($xmlItems == null) {
+                        $xmlItems = $xmlDoc->createElement('items');
+                    }
+                    $xmlItems->appendChild($xmlItem);
+                } catch (\Exception $e) {
+                    $e = $e;
+                }
+            }
+            if ($xmlItems != null) {
+                $xmlInvElem->appendChild($xmlItems);
+            }
+        }
+
+        //		if(is_array($this->exchangeRates) && sizeof($this->exchangeRates) > 0)
+        //		{
+        //			$xmlRates = null;
+        //			foreach ($this->exchangeRates as $rate)
+        //			{
+        //				if(!($rate instanceof Mobilpay_Payment_Exchange_Rate))
+        //				{
+        //					continue;
+        //				}
+        //				try
+        //				{
+        //					$xmlRate = $rate->createXmlElement($xmlDoc);
+        //					if($xmlRates == null)
+        //					{
+        //						$xmlRates = $xmlDoc->createElement('items');
+        //					}
+        //					$xmlRates->appendChild($xmlRate);
+        //				}
+        //				catch (\Exception $e)
+        //				{
+        //					$e = $e;
+        //				}
+        //			}
+        //			if($xmlItems != null)
+        //			{
+        //				$xmlInvElem->appendChild($xmlRates);
+        //			}
+        //		}
 
         return $xmlInvElem;
     }
@@ -180,5 +294,53 @@ class Invoice
     public function getShippingAddress()
     {
         return $this->shippingAddress;
+    }
+
+    public function addHeadItem(Item $item)
+    {
+        array_unshift($this->items, $item);
+
+        return $this;
+    }
+
+    public function addTailItem(Item $item)
+    {
+        array_push($this->items, $item);
+
+        return $this;
+    }
+
+    public function removeHeadItem()
+    {
+        return array_shift($this->items);
+    }
+
+    public function removeTailItem()
+    {
+        return array_pop($this->items);
+    }
+
+    //	public function addHeadExchangeRate(Mobilpay_Payment_Exchange_Rate $rate)
+    //	{
+    //		array_unshift($this->exchangeRates, $rate);
+    //
+    //		return $this;
+    //	}
+
+    //	public function addTailExchangeRate(Mobilpay_Payment_Exchange_Rate $rate)
+    //	{
+    //		array_push($this->exchangeRates, $rate);
+    //
+    //		return $this;
+    //	}
+
+    public function removeHeadExchangeRate()
+    {
+        return array_shift($this->exchangeRates);
+    }
+
+    public function removeTailExchangeRate()
+    {
+        return array_pop($this->exchangeRates);
     }
 }

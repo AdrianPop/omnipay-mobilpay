@@ -3,19 +3,16 @@
 namespace Omnipay\MobilPay\Api\Request;
 
 /**
- * Class Mobilpay_Payment_Request_Sms
+ * Class Sms
  * This class can be used for accessing mobilpay.ro payment interface for your configured online services
- * @copyright NETOPIA System
+ * @copyright NETOPIA
  * @author Claudiu Tudose
  * @version 1.0
+ *
  */
 
-use Exception;
-use DOMDocument;
-use DOMElement;
-use DOMNode;
-
-class Sms extends AbstractRequest
+use Netopia\Payment\Request\PaymentAbstract;
+class Sms extends PaymentAbstract
 {
     const ERROR_LOAD_FROM_XML_SERVICE_ELEM_MISSING = 0x31000001;
     /**
@@ -26,21 +23,21 @@ class Sms extends AbstractRequest
      */
     public $msisdn = null;
 
-    public function __construct()
+    function __construct()
     {
         parent::__construct();
         $this->type = self::PAYMENT_TYPE_SMS;
     }
 
-    protected function _loadFromXml(DOMElement $elem)
+    protected function _loadFromXml(\DOMElement $elem)
     {
         parent::_parseFromXml($elem);
 
         //SMS request specific data
         $elems = $elem->getElementsByTagName('service');
         if ($elems->length != 1) {
-            throw new Exception(
-                'Mobilpay_Payment_Request_Sms::loadFromXml failed: service is missing',
+            throw new \Exception(
+                'Sms::loadFromXml failed: service is missing',
                 self::ERROR_LOAD_FROM_XML_SERVICE_ELEM_MISSING,
             );
         }
@@ -66,22 +63,22 @@ class Sms extends AbstractRequest
         }
 
         if (!isset($reqParams['signature'])) {
-            throw new Exception(
-                'Mobilpay_Payment_Request_Sms::loadFromQueryString failed: signature is missing',
+            throw new \Exception(
+                'Sms::loadFromQueryString failed: signature is missing',
                 self::ERROR_LOAD_FROM_XML_SIGNATURE_ELEM_MISSING,
             );
         }
         $this->signature = $reqParams['signature'];
         if (!isset($reqParams['service'])) {
-            throw new Exception(
-                'Mobilpay_Payment_Request_Sms::loadFromQueryString failed: service is missing',
+            throw new \Exception(
+                'Sms::loadFromQueryString failed: service is missing',
                 self::ERROR_LOAD_FROM_XML_SERVICE_ELEM_MISSING,
             );
         }
         $this->service = $reqParams['service'];
         if (!isset($reqParams['tran_id'])) {
-            throw new Exception(
-                'Mobilpay_Payment_Request_Sms::loadFromQueryString failed: empty order id',
+            throw new \Exception(
+                'Sms::loadFromQueryString failed: empty order id',
                 self::ERROR_LOAD_FROM_XML_ORDER_ID_ATTR_MISSING,
             );
         }
@@ -93,7 +90,7 @@ class Sms extends AbstractRequest
             $this->confirmUrl = $reqParams['confirm_url'];
         }
         if (isset($reqParams['return_url'])) {
-            $this->returnUrl = $reqParams['return_url'];
+            $this->confirmUrl = $reqParams['return_url'];
         }
         if (isset($reqParams['msisdn'])) {
             $this->msisdn = $reqParams['msisdn'];
@@ -111,13 +108,13 @@ class Sms extends AbstractRequest
     protected function _prepare()
     {
         if (is_null($this->signature) || is_null($this->service) || is_null($this->orderId)) {
-            throw new Exception(
+            throw new \Exception(
                 'One or more mandatory properties are invalid!',
                 self::ERROR_PREPARE_MANDATORY_PROPERTIES_UNSET,
             );
         }
 
-        $this->_xmlDoc = new DOMDocument('1.0', 'utf-8');
+        $this->_xmlDoc = new \DOMDocument('1.0', 'utf-8');
         $rootElem = $this->_xmlDoc->createElement('order');
 
         //set payment type attribute

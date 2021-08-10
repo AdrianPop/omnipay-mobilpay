@@ -3,54 +3,41 @@
 namespace Omnipay\MobilPay\Api\Request;
 
 /**
- * Class Mobilpay_Payment_Request_Card
+ * Class Card
  * This class can be used for accessing mobilpay.ro payment interface for your configured online services
- * @copyright NETOPIA System
+ * @copyright NETOPIA
  * @author Claudiu Tudose
  * @version 1.0
  *
  */
-
-use Exception;
-use DOMDocument;
-use DOMElement;
-use DOMNode;
-use Omnipay\MobilPay\Api\Invoice;
-use Omnipay\MobilPay\Api\Recurrence;
-
-class Card extends AbstractRequest
+use Netopia\Payment\Request\PaymentAbstract;
+use Netopia\Payment\Invoice;
+class Card extends PaymentAbstract
 {
     const ERROR_LOAD_FROM_XML_ORDER_INVOICE_ELEM_MISSING = 0x30000001;
 
     public $invoice = null;
-    public $recurrence = null;
 
-    public function __construct()
+    function __construct()
     {
         parent::__construct();
         $this->type = self::PAYMENT_TYPE_CARD;
     }
 
-    protected function _loadFromXml(DOMElement $elem)
+    protected function _loadFromXml(\DOMElement $elem)
     {
         parent::_parseFromXml($elem);
 
         //card request specific data
         $elems = $elem->getElementsByTagName('invoice');
         if ($elems->length != 1) {
-            throw new Exception(
-                'Mobilpay_Payment_Request_Card::loadFromXml failed; invoice element is missing',
+            throw new \Exception(
+                'Card::loadFromXml failed; invoice element is missing',
                 self::ERROR_LOAD_FROM_XML_ORDER_INVOICE_ELEM_MISSING,
             );
         }
 
         $this->invoice = new Invoice($elems->item(0));
-
-        $elems = $elem->getElementsByTagName('recurrence');
-
-        if ($elems->length > 0) {
-            $this->recurrence = new Recurrence($elems->item(0));
-        }
 
         return $this;
     }
@@ -58,13 +45,13 @@ class Card extends AbstractRequest
     protected function _prepare()
     {
         if (is_null($this->signature) || is_null($this->orderId) || !($this->invoice instanceof Invoice)) {
-            throw new Exception(
+            throw new \Exception(
                 'One or more mandatory properties are invalid!',
                 self::ERROR_PREPARE_MANDATORY_PROPERTIES_UNSET,
             );
         }
 
-        $this->_xmlDoc = new DOMDocument('1.0', 'utf-8');
+        $this->_xmlDoc = new \DOMDocument('1.0', 'utf-8');
         $rootElem = $this->_xmlDoc->createElement('order');
 
         //set payment type attribute
@@ -86,17 +73,8 @@ class Card extends AbstractRequest
         $xmlElem->nodeValue = $this->signature;
         $rootElem->appendChild($xmlElem);
 
-        $xmlElem = $this->_xmlDoc->createElement('service');
-        $xmlElem->nodeValue = $this->service;
-        $rootElem->appendChild($xmlElem);
-
         $xmlElem = $this->invoice->createXmlElement($this->_xmlDoc);
         $rootElem->appendChild($xmlElem);
-
-        if ($this->recurrence instanceof Recurrence) {
-            $xmlElem = $this->recurrence->createXmlElement($this->_xmlDoc);
-            $rootElem->appendChild($xmlElem);
-        }
 
         if (is_array($this->params) && sizeof($this->params) > 0) {
             $xmlParams = $this->_xmlDoc->createElement('params');

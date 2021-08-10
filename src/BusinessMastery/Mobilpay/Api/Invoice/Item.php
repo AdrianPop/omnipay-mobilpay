@@ -3,12 +3,12 @@
 namespace Omnipay\MobilPay\Api\Invoice;
 
 /**
- * Class Mobilpay_Payment_Invoice_Item
- * @copyright NETOPIA System
+ * Class Item
+ * @copyright NETOPIA
  * @author Claudiu Tudose
  * @version 1.0
+ *
  */
-
 class Item
 {
     const ERROR_INVALID_PARAMETER = 0x11111001;
@@ -29,19 +29,19 @@ class Item
     public $price = null;
     public $vat = null;
 
-    public function __construct(DOMNode $elem = null)
+    public function __construct(\DOMNode $elem = null)
     {
         if ($elem != null) {
             $this->loadFromXml($elem);
         }
     }
 
-    protected function loadFromXml(DOMNode $elem)
+    protected function loadFromXml(\DOMNode $elem)
     {
         $elems = $elem->getElementsByTagName('code');
         if ($elems->length != 1) {
-            throw new Exception(
-                'Mobilpay_Payment_Invoice_Item::loadFromXml failed! Invalid code element.',
+            throw new \Exception(
+                'Item::loadFromXml failed! Invalid code element.',
                 self::ERROR_LOAD_FROM_XML_CODE_ELEM_MISSING,
             );
         }
@@ -49,8 +49,8 @@ class Item
 
         $elems = $elem->getElementsByTagName('name');
         if ($elems->length != 1) {
-            throw new Exception(
-                'Mobilpay_Payment_Invoice_Item::loadFromXml failed! Invalid name element.',
+            throw new \Exception(
+                'Item::loadFromXml failed! Invalid name element.',
                 self::ERROR_LOAD_FROM_XML_NAME_ELEM_MISSING,
             );
         }
@@ -63,38 +63,38 @@ class Item
 
         $elems = $elem->getElementsByTagName('quantity');
         if ($elems->length != 1) {
-            throw new Exception(
-                'Mobilpay_Payment_Invoice_Item::loadFromXml failed! Invalid quantity element.',
+            throw new \Exception(
+                'Item::loadFromXml failed! Invalid quantity element.',
                 self::ERROR_LOAD_FROM_XML_QUANTITY_ELEM_MISSING,
             );
         }
         $this->quantity = doubleval(urldecode($elems->item(0)->nodeValue));
         if ($this->quantity == 0) {
-            throw new Exception(
-                'Mobilpay_Payment_Invoice_Item::loadFromXml failed! Invalid quantity value=' . $this->quantity,
+            throw new \Exception(
+                'Item::loadFromXml failed! Invalid quantity value=' . $this->quantity,
                 self::ERROR_LOAD_FROM_XML_QUANTITY_ELEM_EMPTY,
             );
         }
 
         $elems = $elem->getElementsByTagName('price');
         if ($elems->length != 1) {
-            throw new Exception(
-                'Mobilpay_Payment_Invoice_Item::loadFromXml failed! Invalid price element.',
+            throw new \Exception(
+                'Item::loadFromXml failed! Invalid price element.',
                 self::ERROR_LOAD_FROM_XML_PRICE_ELEM_MISSING,
             );
         }
         $this->price = doubleval(urldecode($elems->item(0)->nodeValue));
         if ($this->price == 0) {
-            throw new Exception(
-                'Mobilpay_Payment_Invoice_Item::loadFromXml failed! Invalid price value=' . $this->price,
+            throw new \Exception(
+                'Item::loadFromXml failed! Invalid price value=' . $this->price,
                 self::ERROR_LOAD_FROM_XML_PRICE_ELEM_EMPTY,
             );
         }
 
         $elems = $elem->getElementsByTagName('vat');
         if ($elems->length != 1) {
-            throw new Exception(
-                'Mobilpay_Payment_Invoice_Item::loadFromXml failed! Invalid vat element.',
+            throw new \Exception(
+                'Item::loadFromXml failed! Invalid vat element.',
                 self::ERROR_LOAD_FROM_XML_VAT_ELEM_MISSING,
             );
         }
@@ -103,10 +103,10 @@ class Item
         return $this;
     }
 
-    public function createXmlElement(DOMDocument $xmlDoc)
+    public function createXmlElement(\DOMDocument $xmlDoc)
     {
-        if (!($xmlDoc instanceof DOMDocument)) {
-            throw new Exception('', self::ERROR_INVALID_PARAMETER);
+        if (!($xmlDoc instanceof \DOMDocument)) {
+            throw new \Exception('', self::ERROR_INVALID_PARAMETER);
         }
 
         $xmlItemElem = $xmlDoc->createElement('item');
@@ -119,7 +119,7 @@ class Item
             $this->price == null ||
             $this->vat == null
         ) {
-            throw new Exception('Invalid property', self::ERROR_INVALID_PROPERTY);
+            throw new \Exception('Invalid property', self::ERROR_INVALID_PROPERTY);
         }
 
         $xmlElem = $xmlDoc->createElement('code');
