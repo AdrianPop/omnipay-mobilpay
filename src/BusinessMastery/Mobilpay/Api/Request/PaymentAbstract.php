@@ -13,8 +13,6 @@ namespace Omnipay\MobilPay\Api\Request;
  * In order to use the OpenSSL functions you need to install the OpenSSL package.
  * Check PHP documentation for installing OpenSSL package
  */
-
-use Netopia\Payment\Request\Sms;
 abstract class PaymentAbstract
 {
     const PAYMENT_TYPE_SMS = 'sms';

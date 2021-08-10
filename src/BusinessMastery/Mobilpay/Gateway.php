@@ -3,8 +3,6 @@
 namespace Omnipay\MobilPay;
 
 use Omnipay\Common\AbstractGateway;
-use Omnipay\MobilPay\Message\PurchaseRequest;
-use Omnipay\MobilPay\Message\CompletePurchaseRequest;
 
 /**
  * MobilPay Gateway

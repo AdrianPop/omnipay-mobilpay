@@ -2,6 +2,8 @@
 
 namespace Omnipay\MobilPay\Api\Request;
 
+use Omnipay\MobilPay\Api\Invoice;
+
 /**
  * Class Card
  * This class can be used for accessing mobilpay.ro payment interface for your configured online services
@@ -10,8 +12,6 @@ namespace Omnipay\MobilPay\Api\Request;
  * @version 1.0
  *
  */
-use Netopia\Payment\Request\PaymentAbstract;
-use Netopia\Payment\Invoice;
 class Card extends PaymentAbstract
 {
     const ERROR_LOAD_FROM_XML_ORDER_INVOICE_ELEM_MISSING = 0x30000001;

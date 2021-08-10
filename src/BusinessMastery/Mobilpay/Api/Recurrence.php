@@ -4,6 +4,7 @@ namespace Omnipay\MobilPay\Api;
 
 use DOMDocument;
 use DOMNode;
+use Exception;
 
 class Recurrence
 {

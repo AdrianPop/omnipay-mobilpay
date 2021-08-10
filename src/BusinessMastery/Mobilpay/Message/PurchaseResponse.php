@@ -17,7 +17,7 @@ class PurchaseResponse extends AbstractResponse implements RedirectResponseInter
     protected $redirectUrl;
 
     /**
-     * @param  Omnipay\Common\Message\RequestInterface $request
+     * @param  RequestInterface $request
      * @param  array $data
      * @param  string $redirectUrl
      * @return void

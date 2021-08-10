@@ -10,8 +10,6 @@ namespace Omnipay\MobilPay\Api\Request;
  * @version 1.0
  *
  */
-
-use Netopia\Payment\Request\PaymentAbstract;
 class Sms extends PaymentAbstract
 {
     const ERROR_LOAD_FROM_XML_SERVICE_ELEM_MISSING = 0x31000001;

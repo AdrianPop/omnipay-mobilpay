@@ -25,7 +25,8 @@
     "require": {
         "php": ">=7.1",
         "omnipay/common": "~3.0",
-        "php-http/guzzle7-adapter": "^1.0"
+        "php-http/guzzle7-adapter": "^1.0",
+      "ext-dom": "*"
     },
     "autoload": {
         "psr-4": {

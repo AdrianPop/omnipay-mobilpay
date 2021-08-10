@@ -2,6 +2,8 @@
 
 namespace Omnipay\MobilPay\Api\Request;
 
+use Omnipay\MobilPay\Api\Address;
+
 /**
  * @package   Notify
  * @copyright  Copyright (c)NETOPIA
@@ -9,8 +11,6 @@ namespace Omnipay\MobilPay\Api\Request;
  *
  * This class is used for the IPN
  */
-
-use Netopia\Payment\Address;
 class Notify
 {
     /**

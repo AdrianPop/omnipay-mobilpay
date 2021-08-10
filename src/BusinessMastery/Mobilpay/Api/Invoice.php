@@ -2,6 +2,8 @@
 
 namespace Omnipay\MobilPay\Api;
 
+use Omnipay\MobilPay\Api\Invoice\Item;
+
 /**
  * Class Invoice
  * @copyright NETOPIA
@@ -9,7 +11,6 @@ namespace Omnipay\MobilPay\Api;
  * @version 1.0
  *
  */
-use Netopia\Payment\Invoice\Item;
 class Invoice
 {
     const ERROR_INVALID_PARAMETER = 0x11110001;
