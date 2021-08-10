@@ -275,18 +275,18 @@ class PurchaseRequest extends AbstractRequest
 
         $address->type = $parameters['type']; // person or company
         $address->firstName = $parameters['firstName'];
-        $address->lastName = $parameters['lastName'];
-        $address->fiscalNumber = $parameters['fiscalNumber'];
-        $address->identityNumber = $parameters['identityNumber'];
-        $address->country = $parameters['country'];
-        $address->county = $parameters['county'];
-        $address->city = $parameters['city'];
-        $address->zipCode = $parameters['zipCode'];
-        $address->address = $parameters['address'];
         $address->email = $parameters['email'];
         $address->mobilePhone = $parameters['mobilePhone'];
-        $address->bank = $parameters['bank'];
-        $address->iban = $parameters['iban'];
+        $address->lastName = $parameters['lastName'] ?? '';
+        $address->fiscalNumber = $parameters['fiscalNumber'] ?? '';
+        $address->identityNumber = $parameters['identityNumber'] ?? '';
+        $address->country = $parameters['country'] ?? '';
+        $address->county = $parameters['county'] ?? '';
+        $address->city = $parameters['city'] ?? '';
+        $address->zipCode = $parameters['zipCode'] ?? '';
+        $address->address = $parameters['address'] ?? '';
+        $address->bank = $parameters['bank'] ?? '';
+        $address->iban = $parameters['iban'] ?? '';
 
         return $address;
     }
